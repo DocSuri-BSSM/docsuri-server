@@ -1,0 +1,14 @@
+package com.example.docsuriserver.common;
+
+public enum ValidationRule {
+    DESCRIPTION_MATCH,
+    GROSS_WEIGHT_MATCH,
+    PACKAGE_QTY_MATCH,
+    PARTY_NAME_MATCH,
+    AMOUNT_CALCULATION,
+    INVOICE_NO_MATCH,
+    VESSEL_VOYAGE_MATCH,
+    PORT_MATCH,
+    SHIPPING_MARKS_MATCH,
+    ADDRESS_MATCH
+}
