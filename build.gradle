@@ -20,14 +20,39 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'org.postgresql:postgresql'
+    // 문서 생성 (correctionRequestExport)
+    implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testCompileOnly 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// .env 파일이 있으면 환경변수로 읽어들인다 (Spring Boot는 .env를 자동으로 읽지 않는다).
+// test도 포함하는 이유: 기본 스모크테스트(DocsuriServerApplicationTests)조차 app.gemini.api-key
+// 프로퍼티 해석이 필요해 컨텍스트 로딩에 실패하기 때문.
+def loadDotEnv = { task ->
+    def envFile = file('.env')
+    if (envFile.exists()) {
+        envFile.readLines().each { line ->
+            def trimmed = line.trim()
+            if (trimmed && !trimmed.startsWith('#') && trimmed.contains('=')) {
+                def idx = trimmed.indexOf('=')
+                def key = trimmed.substring(0, idx).trim()
+                def value = trimmed.substring(idx + 1).trim()
+                if (value) {
+                    task.environment(key, value)
+                }
+            }
+        }
+    }
+}
+
+tasks.named('bootRun') { loadDotEnv(it) }
+tasks.named('test') { loadDotEnv(it) }

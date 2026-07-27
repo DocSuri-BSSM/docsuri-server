@@ -1,3 +1,52 @@
 spring:
   application:
     name: docsuri-server
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/docsuri
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate      # schema.sql 로 스키마를 관리한다
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  sql:
+    init:
+      mode: always            # schema.sql, data.sql 실행
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE   # sessionId -> session_id (API 계약과 일치)
+    default-property-inclusion: non_null
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 60MB
+
+app:
+  storage:
+    local-path: ./storage
+  export:
+    ttl-hours: 24
+  ocr:
+    provider: gemini    # gemini | mock (DECISIONS.md 1절 — 설계서는 UnavailableOcrClient를 규정하지만 개발 속도를 위해 gemini를 기본값으로 유지)
+  gemini:
+    api-key: ${GEMINI_API_KEY}
+    endpoint: https://generativelanguage.googleapis.com/v1beta/models
+    timeout-seconds: 60
+    max-retries: 2
+    model:
+      # GeminiOcrClient 전용 (04-AI-INTEGRATION.md 7절과의 편차 — DECISIONS.md 참고).
+      ocr: gemini-3.6-flash
+      reasoning: ${GEMINI_MODEL_REASONING:gemini-3.1-pro-preview}
+      fast: ${GEMINI_MODEL_FAST:gemini-3.6-flash}
+
+logging:
+  level:
+    org.hibernate.SQL: debug
