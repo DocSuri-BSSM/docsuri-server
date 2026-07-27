@@ -1,3 +1,34 @@
 spring:
   application:
     name: docsuri-server
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/docsuri
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update      # MVP 단계용. 스키마 확정 후 validate + schema.sql 로 전환 권장
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE   # sessionId -> session_id (Apidog 명세와 일치)
+    default-property-inclusion: non_null
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 60MB
+
+app:
+  storage:
+    local-path: ./uploads
+
+logging:
+  level:
+    org.hibernate.SQL: debug
