@@ -84,13 +84,12 @@ public class HsCodeService {
         String keyword = (request.productName() + " " + request.productDescription()).trim();
         List<HsCode> candidates = hsCodeRepository.searchCandidates(keyword, CANDIDATE_SEARCH_LIMIT);
 
-        // 후보가 0건이면 LLM을 호출하지 않는다 (04-AI-INTEGRATION.md 4.1절)
         List<HsCodeCandidate> ranked = candidates.isEmpty() ? List.of() : rankCandidates(request, candidates);
         List<HsCodeCandidate> limited = ranked.stream().limit(request.maxCandidates()).toList();
 
         HsCodeRecommendation saved = recommendationRepository.save(HsCodeRecommendation.create(
                 request.productName(), request.productDescription(), request.originCountryCode(),
-                request.maxCandidates(), limited));
+                request.maxCandidates(), request.outputLanguage(), limited));
 
         String disclaimer = disclaimerQueryService.getContent(DisclaimerPosition.HS_CODE);
         return HsCodeRecommendationCreateResponse.of(saved.getRecommendationId(), limited, disclaimer);
@@ -103,7 +102,8 @@ public class HsCodeService {
                 "PRODUCT_NAME", request.productName(),
                 "PRODUCT_DESCRIPTION", request.productDescription(),
                 "ORIGIN_COUNTRY_CODE", request.originCountryCode() == null ? "" : request.originCountryCode(),
-                "HS_CODE_CANDIDATES_JSON", buildCandidatesJson(candidates)));
+                "HS_CODE_CANDIDATES_JSON", buildCandidatesJson(candidates),
+                "OUTPUT_LANGUAGE", request.outputLanguage()));
 
         GeminiRequest geminiRequest = new GeminiRequest(
                 SYSTEM_INSTRUCTION_RECOMMEND, userPrompt, HsCodeRecommendationSchema.schema(), 0.1, GeminiModelTier.REASONING);
@@ -160,7 +160,8 @@ public class HsCodeService {
                 "PRODUCT_NAME", request.productName(),
                 "PRODUCT_DESCRIPTION", request.productDescription(),
                 "ADDITIONAL_FACTS_JSON", writeJson(request.additionalFacts()),
-                "LEGAL_BASIS_CANDIDATES_JSON", writeJson(LEGAL_BASIS_CANDIDATES)));
+                "LEGAL_BASIS_CANDIDATES_JSON", writeJson(LEGAL_BASIS_CANDIDATES),
+                "OUTPUT_LANGUAGE", request.outputLanguage()));
 
         GeminiRequest geminiRequest = new GeminiRequest(
                 SYSTEM_INSTRUCTION_JUSTIFICATION, userPrompt, HsCodeJustificationSchema.schema(), 0.3, GeminiModelTier.REASONING);
@@ -182,7 +183,7 @@ public class HsCodeService {
 
         HsCodeJustification saved = justificationRepository.save(HsCodeJustification.create(
                 request.hsCode(), request.productName(), request.productDescription(), request.additionalFacts(),
-                title, content, legalBasis));
+                request.outputLanguage(), title, content, legalBasis));
 
         String disclaimer = disclaimerQueryService.getContent(DisclaimerPosition.HS_CODE);
         return new HsCodeJustificationCreateResponse(saved.getJustificationId(), title, content, legalBasis, disclaimer);

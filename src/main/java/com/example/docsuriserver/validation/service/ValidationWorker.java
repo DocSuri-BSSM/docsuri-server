@@ -89,7 +89,8 @@ public class ValidationWorker {
             List<ExtractedDocument> documents = parseQueryService.getCompletedExtractions(run.getSessionId());
             List<Finding> findings = engine.evaluate(documents, run.getRules(), run.getWeightTolerancePercent());
 
-            Map<ValidationRule, NarrativeText> narratives = findings.isEmpty() ? Map.of() : generateNarratives(findings);
+            Map<ValidationRule, NarrativeText> narratives = findings.isEmpty()
+                    ? Map.of() : generateNarratives(findings, run.getOutputLanguage());
 
             List<ValidationIssue> issues = findings.stream()
                     .map(f -> toIssue(f, narratives.get(f.rule())))
@@ -116,9 +117,11 @@ public class ValidationWorker {
         }
     }
 
-    private Map<ValidationRule, NarrativeText> generateNarratives(List<Finding> findings) {
+    private Map<ValidationRule, NarrativeText> generateNarratives(List<Finding> findings, String outputLanguage) {
         String findingsJson = buildFindingsJson(findings);
-        String userPrompt = promptTemplate.render("validation-narrative.md", Map.of("FINDINGS_JSON", findingsJson));
+        String userPrompt = promptTemplate.render("validation-narrative.md", Map.of(
+                "FINDINGS_JSON", findingsJson,
+                "OUTPUT_LANGUAGE", outputLanguage));
         GeminiRequest request = new GeminiRequest(
                 SYSTEM_INSTRUCTION, userPrompt, ValidationNarrativeSchema.schema(), 0.1, GeminiModelTier.FAST);
 

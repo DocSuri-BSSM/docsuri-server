@@ -30,6 +30,9 @@ public class HsCodeJustification {
     @Column(name = "additional_facts", columnDefinition = "jsonb")
     private List<String> additionalFacts;
 
+    @Column(name = "output_language", nullable = false, length = 10)
+    private String outputLanguage;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -47,13 +50,14 @@ public class HsCodeJustification {
     }
 
     public static HsCodeJustification create(String hsCode, String productName, String productDescription,
-                                             List<String> additionalFacts, String title, String content,
-                                             List<String> legalBasis) {
+                                             List<String> additionalFacts, String outputLanguage, String title,
+                                             String content, List<String> legalBasis) {
         HsCodeJustification j = new HsCodeJustification();
         j.hsCode = hsCode;
         j.productName = productName;
         j.productDescription = productDescription;
         j.additionalFacts = additionalFacts;
+        j.outputLanguage = outputLanguage;
         j.title = title;
         j.content = content;
         j.legalBasis = legalBasis;

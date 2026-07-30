@@ -79,7 +79,7 @@ class FullFlowIntegrationTest {
 
         // 4. 검증 시작
         JsonNode validationData = postJson("/document-sessions/" + sessionId + "/validation", """
-                {"rules":["GROSS_WEIGHT_MATCH","PACKAGE_QTY_MATCH"],"weight_tolerance_percent":0.5}
+                {"rules":["GROSS_WEIGHT_MATCH","PACKAGE_QTY_MATCH"],"weight_tolerance_percent":0.5,"output_language":"KO"}
                 """).path("data");
         assertThat(validationData.path("validation_run_id").asString()).isNotBlank();
 

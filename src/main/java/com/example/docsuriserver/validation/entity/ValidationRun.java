@@ -31,6 +31,9 @@ public class ValidationRun {
     @Column(name = "weight_tolerance_percent", nullable = false)
     private BigDecimal weightTolerancePercent;
 
+    @Column(name = "output_language", nullable = false, length = 10)
+    private String outputLanguage;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     private JobStatus status;
@@ -70,11 +73,13 @@ public class ValidationRun {
     protected ValidationRun() {
     }
 
-    public static ValidationRun create(UUID sessionId, List<ValidationRule> rules, BigDecimal weightTolerancePercent) {
+    public static ValidationRun create(UUID sessionId, List<ValidationRule> rules, BigDecimal weightTolerancePercent,
+                                       String outputLanguage) {
         ValidationRun run = new ValidationRun();
         run.sessionId = sessionId;
         run.rules = rules;
         run.weightTolerancePercent = weightTolerancePercent;
+        run.outputLanguage = outputLanguage;
         run.status = JobStatus.PENDING;
         run.totalChecked = 0;
         run.normalCount = 0;
@@ -125,6 +130,10 @@ public class ValidationRun {
 
     public BigDecimal getWeightTolerancePercent() {
         return weightTolerancePercent;
+    }
+
+    public String getOutputLanguage() {
+        return outputLanguage;
     }
 
     public JobStatus getStatus() {
