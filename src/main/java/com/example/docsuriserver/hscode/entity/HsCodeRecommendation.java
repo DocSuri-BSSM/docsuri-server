@@ -32,6 +32,9 @@ public class HsCodeRecommendation {
     @Column(name = "max_candidates", nullable = false)
     private int maxCandidates;
 
+    @Column(name = "output_language", nullable = false, length = 10)
+    private String outputLanguage;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "candidates", nullable = false, columnDefinition = "jsonb")
     private List<HsCodeCandidate> candidates;
@@ -44,12 +47,13 @@ public class HsCodeRecommendation {
 
     public static HsCodeRecommendation create(String productName, String productDescription,
                                               String originCountryCode, int maxCandidates,
-                                              List<HsCodeCandidate> candidates) {
+                                              String outputLanguage, List<HsCodeCandidate> candidates) {
         HsCodeRecommendation r = new HsCodeRecommendation();
         r.productName = productName;
         r.productDescription = productDescription;
         r.originCountryCode = originCountryCode;
         r.maxCandidates = maxCandidates;
+        r.outputLanguage = outputLanguage;
         r.candidates = candidates;
         r.createdAt = LocalDateTime.now();
         return r;

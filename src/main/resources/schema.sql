@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS validation_runs (
     session_id              UUID          NOT NULL REFERENCES document_sessions (session_id) ON DELETE CASCADE,
     rules                   JSONB         NOT NULL,  -- ValidationRule[] (문자열 배열)
     weight_tolerance_percent DECIMAL(7, 4) NOT NULL DEFAULT 0.5,
+    output_language         VARCHAR(10)   NOT NULL,  -- KO | EN
     status                  VARCHAR(30)   NOT NULL,  -- PENDING | PROCESSING | COMPLETED | FAILED
     overall_signal          VARCHAR(20),             -- GREEN | YELLOW | RED
     total_checked           INT           NOT NULL DEFAULT 0,
@@ -122,6 +123,7 @@ CREATE TABLE IF NOT EXISTS hs_code_recommendations (
     product_description TEXT,
     origin_country_code VARCHAR(10),
     max_candidates      INT          NOT NULL DEFAULT 3,
+    output_language     VARCHAR(10)  NOT NULL,       -- KO | EN
     candidates          JSONB        NOT NULL,       -- HsCodeCandidate[]
     created_at          TIMESTAMP    NOT NULL
 );
@@ -132,6 +134,7 @@ CREATE TABLE IF NOT EXISTS hs_code_justifications (
     product_name        VARCHAR(255) NOT NULL,
     product_description TEXT,
     additional_facts    JSONB,                       -- string[]
+    output_language     VARCHAR(10)  NOT NULL,       -- KO | EN
     title               VARCHAR(255) NOT NULL,
     content              TEXT         NOT NULL,       -- 마크다운 볼드 포함
     legal_basis          JSONB        NOT NULL,       -- string[]

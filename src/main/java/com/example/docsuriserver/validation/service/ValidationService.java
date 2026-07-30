@@ -46,7 +46,7 @@ public class ValidationService {
         }
 
         ValidationRun run = runRepository.save(
-                ValidationRun.create(sessionId, request.rules(), request.weightTolerancePercent()));
+                ValidationRun.create(sessionId, request.rules(), request.weightTolerancePercent(), request.outputLanguage()));
 
         eventPublisher.publishEvent(new ValidationRunCreatedEvent(run.getValidationRunId()));
 
