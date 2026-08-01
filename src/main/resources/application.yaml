@@ -43,9 +43,9 @@ app:
     max-retries: 2
     model:
       # GeminiOcrClient 전용 (04-AI-INTEGRATION.md 7절과의 편차 — DECISIONS.md 참고).
-      ocr: gemini-3.6-flash
-      reasoning: ${GEMINI_MODEL_REASONING:gemini-3.1-pro-preview}
-      fast: ${GEMINI_MODEL_FAST:gemini-3.6-flash}
+      ocr: gemini-3.1-flash-lite
+      reasoning: ${GEMINI_MODEL_REASONING:gemini-3.1-flash-lite}
+      fast: ${GEMINI_MODEL_FAST:gemini-3.1-flash-lite}
 
 management:
   endpoints:
