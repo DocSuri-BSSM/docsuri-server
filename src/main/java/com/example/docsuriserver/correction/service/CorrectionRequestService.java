@@ -94,14 +94,21 @@ public class CorrectionRequestService {
 
     private List<CorrectionVariable> parseVariables(JsonNode node) {
         List<CorrectionVariable> variables = new ArrayList<>();
+        Set<String> usedKeys = new HashSet<>();
         if (node.isArray()) {
             for (JsonNode v : node) {
                 String key = v.path("variable_key").asString(null);
                 if (key == null || key.isBlank()) {
                     continue;
                 }
+                // variable_key 중복 방지: 이미 쓴 키면 _2, _3... 접미사를 붙여 유일하게 만든다.
+                String uniqueKey = key;
+                int suffix = 2;
+                while (!usedKeys.add(uniqueKey)) {
+                    uniqueKey = key + "_" + suffix++;
+                }
                 variables.add(new CorrectionVariable(
-                        key,
+                        uniqueKey,
                         v.path("label").asString(""),
                         v.path("value").asString(""),
                         v.path("required").asBoolean(true)));
